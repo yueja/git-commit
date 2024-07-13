@@ -200,11 +200,14 @@ function get_commit_type_and_message {
       git commit -m "$commit_message"
       if [ $? -eq 0 ]; then
           echo ${highlight}"commit 提交成功！分支名为："$current_branch${normal}
+          return
       else
           echo ${highlightRed}"commit 提交失败，请检查您的Git仓库状态或提交信息是否正确。"${normal}
+          return 1
       fi
   else
       echo ${highlightRed}"commit 提交失败，未获取到有效的提交信息，提交被取消。"${normal}
+      return 1
   fi
 }
 

@@ -3,14 +3,21 @@
 # 引入readline库
 . /etc/profile.d/readline.sh
 
-declare -A paramDict
+# 初始化一个空数组来存储参数
+#params=()
+
+# 全部步骤，包含add 和 push
+allStep =0
 
 # 将位置参数添加到数组中
 # 注意：从$1开始，直到最后一个参数
 for arg in "$@"; do
-  paramDict["$arg"]=1
+  if [ "$arg" == "-a" ];then
+    allStep=1
+  fi
 done
 
+echo 6666${allStep}
 
 # 遍历数组并打印每个参数
 #for param in "${params[@]}"; do
@@ -209,16 +216,14 @@ function get_commit_type_and_message {
   fi
 }
 
-if [ "${paramDict["-a"]}" -eq 1 ] ; then
+if [[ ${allStep} -eq 1 ]] ; then
   git add .
 fi
 
 #  调用主函数
-get_commit_type_and_message
+#get_commit_type_and_message
 
-echo 666666,${paramDict["-a"]}
-
-if [ ${paramDict["-a"]} -eq 1 ] ; then
+if [ ${allStep} -eq 1 ] ; then
   git push
   echo "push 提交成功！分支名为："$current_branch
 fi

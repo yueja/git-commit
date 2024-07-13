@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# 引入readline库
+. /etc/profile.d/readline.sh
+
 # 检查当前目录是否为Git仓库
 if ! git rev-parse --is-inside-work-tree &>/dev/null; then
     echo "错误：当前目录不是一个Git仓库。"
@@ -27,6 +30,7 @@ if command -v tput >/dev/null 2>&1; then
     if [ $ncolors -ge 8 ]; then
         normal=$(tput sgr0)
         highlight=$(tput setaf 2) # 亮绿色
+        highlightRed=$(tput setaf 1) # 红色
     fi
 fi
 
@@ -34,8 +38,74 @@ fi
 : ${highlight:=$normal}
 
 
-#function get_commit_type_and_message {
-  # 主循环
+enter=0
+upward=0
+down=0
+left=0
+right=0
+
+# 监听用户选择键盘上下输入左右输入和回车换行符
+function listen_in_keyboard {
+#  重置标志位
+  upward=0
+  down=0
+  left=0
+  right=0
+
+  akey=(0 0 0)
+
+  cESC=`echo -ne "\033"`
+
+  while :
+  do
+      #这里要注意，这里有-n选项，后跟一个数字，指定输入的字符长度最大值，所以不管key变量的值有多少个字符，都是一个值一个值做循环， 有多少个值就循环多少次
+      #输入键盘的上下左右键时，都有三个字符(ESC键算一个)，所以都是做三次循环，每做一次循环，akey的值都会发生改变
+      read -n 1 key
+
+      if [ -z "$key" ]; then
+        # 换行符
+        enter=1
+        break
+      fi
+
+      if [[ ${key} == 'q' ]]; then
+        # 退出
+        exit 1
+      fi
+
+      akey[0]=${akey[1]}
+      akey[1]=${akey[2]}
+      akey[2]=${key}
+
+      if [[ ${key} == ${cESC} && ${akey[1]} == ${cESC} ]]
+      then
+          echo "ESC键"
+      elif [[ ${akey[0]} == ${cESC} && ${akey[1]} == "[" ]]
+      then
+          if [[ ${key} == "A" ]];then
+#             echo "上键"
+             upward=1
+             break
+          elif [[ ${key} == "B" ]];then
+#             echo "向下"
+             down=1
+             break
+          elif [[ ${key} == "D" ]];then
+#             echo "向左"
+             left=1
+             break
+          elif [[ ${key} == "C" ]];then
+#             echo "向右"
+             right=1
+             break
+          fi
+      fi
+  done
+}
+
+
+function get_commit_type_and_message {
+# 主循环
   while true; do
       # 清除屏幕
       clear
@@ -52,61 +122,59 @@ fi
       done
 
       # 读取用户输入
-      read -n 1 key
-      case $key in
-          j)
-              ((selected++))
-              if [ $selected -ge ${#options[@]} ]; then
-                  selected=0
-              fi
-              ;;
-          k)
-              ((selected--))
-              if [ $selected -lt 0 ]; then
-                  selected=$(( ${#options[@]} - 1 ))
-              fi
-              ;;
-           '')
-              echo "选中了: ${options[$selected]}"
-              case $selected in
-                      0)
-                          prefix="feat"
-                          ;;
-                      1)
-                          prefix="fix"
-                          ;;
-                      2)
-                          prefix="docs"
-                          ;;
-                      3)
-                          prefix="style"
-                          ;;
-                      4)
-                          prefix="refactor"
-                          ;;
-                      5)
-                          prefix="perf"
-                          ;;
-                      6)
-                          prefix="test"
-                          ;;
-                      7)
-                          prefix="chore"
-                          ;;
-              esac
+      listen_in_keyboard
 
-              echo "请输入$prefix 类型的提交信息:"
-                read message
-                commit_message="$prefix: $message"
-                echo "信息组装：$commit_message"
-                break
-              ;;
-          *)
-              echo "无效的输入，按 j/k 上下移动，按 q 退出"
-              ;;
-      esac
+      if [ $enter -eq 1 ];then
+        # 回车选中变更类型
+        echo "本次变更为: ${highlightRed}${options[$selected]}${normal}"
+        case $selected in
+             0)
+               prefix="feat"
+               ;;
+             1)
+               prefix="fix"
+               ;;
+             2)
+               prefix="docs"
+               ;;
+             3)
+               prefix="style"
+               ;;
+             4)
+               prefix="refactor"
+               ;;
+             5)
+               prefix="perf"
+               ;;
+             6)
+               prefix="test"
+               ;;
+             7)
+               prefix="chore"
+               ;;
+        esac
+        echo "请输入$prefix 类型的提交信息:"
+        read message
+        commit_message="$prefix: $message"
+        break
+      elif [ $upward -eq 1 ] || [ $left -eq 1 ]; then
+          ((selected--))
+          if [ $selected -lt 0 ]; then
+              selected=$(( ${#options[@]} - 1 ))
+          fi
+      elif [ $down -eq 1 ] || [ $right -eq 1 ]; then
+          ((selected++))
+          if [ $selected -ge ${#options[@]} ]; then
+             selected=0
+          fi
+      else  echo "无效的输入，按 Ctrl + C 退出"
+      fi
   done
-#}
+}
+
+#  调用主函数
+get_commit_type_and_message
+
 
 # 执行Git提交
 if [ -n "$commit_message" ]; then

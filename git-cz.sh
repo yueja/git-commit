@@ -3,11 +3,7 @@
 # 引入readline库
 . /etc/profile.d/readline.sh
 
-# 初始化一个空数组来存储参数
-#params=()
-
-# 全部步骤，包含add 和 push
-#allStep =0
+declare -A paramDict
 
 # 将位置参数添加到数组中
 # 注意：从$1开始，直到最后一个参数
@@ -220,9 +216,9 @@ fi
 #  调用主函数
 get_commit_type_and_message
 
-echo 666666${paramDict["-a"]}
+echo 666666,${paramDict["-a"]}
 
-if [ ${paramDict["-a"]} -eq 1 ] ; then
+if [[ -v paramDict["-a"] ]] && [ ${paramDict["-a"]} -eq 1 ] ; then
   git push
   echo "push 提交成功！分支名为："$current_branch
 fi

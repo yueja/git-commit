@@ -3,6 +3,25 @@
 # 引入readline库
 . /etc/profile.d/readline.sh
 
+# 初始化一个空数组来存储参数
+#params=()
+
+# 全部步骤，包含add 和 push
+#allStep =0
+
+# 将位置参数添加到数组中
+# 注意：从$1开始，直到最后一个参数
+for arg in "$@"; do
+  paramDict["$arg"]=1
+done
+
+
+# 遍历数组并打印每个参数
+#for param in "${params[@]}"; do
+#  if
+#    echo "参数: $param"
+#done
+
 # 检查当前目录是否为Git仓库
 if ! git rev-parse --is-inside-work-tree &>/dev/null; then
     echo "错误：当前目录不是一个Git仓库。"
@@ -180,20 +199,36 @@ function get_commit_type_and_message {
       else  echo "无效的输入，按 Ctrl + C 退出"
       fi
   done
+
+  # 执行Git提交
+  if [ -n "$commit_message" ]; then
+      git commit -m "$commit_message"
+      if [ $? -eq 0 ]; then
+          echo "commit 提交成功！分支名为："$current_branch
+      else
+          echo ${highlightRed}"提交失败，请检查您的Git仓库状态或提交信息是否正确。"${normal}
+      fi
+  else
+      echo ${highlightRed}"提交失败，未获取到有效的提交信息，提交被取消。"${normal}
+  fi
 }
+
+if [ "${paramDict["-a"]}" -eq 1 ] ; then
+  git add .
+fi
 
 #  调用主函数
 get_commit_type_and_message
 
+echo 666666${paramDict["-a"]}
 
-# 执行Git提交
-if [ -n "$commit_message" ]; then
-    git commit -m "$commit_message"
-    if [ $? -eq 0 ]; then
-        echo "提交成功！分支名为："$current_branch
-    else
-        echo ${highlightRed}"提交失败，请检查您的Git仓库状态或提交信息是否正确。"${normal}
-    fi
-else
-    echo ${highlightRed}"提交失败，未获取到有效的提交信息，提交被取消。"${normal}
+if [ ${paramDict["-a"]} -eq 1 ] ; then
+  git push
+  echo "push 提交成功！分支名为："$current_branch
 fi
+
+
+
+
+
+

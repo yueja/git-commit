@@ -31,6 +31,7 @@ if command -v tput >/dev/null 2>&1; then
         normal=$(tput sgr0)
         highlight=$(tput setaf 2) # 亮绿色
         highlightRed=$(tput setaf 1) # 红色
+        highlightOrange=$(tput setaf 3) # 橙黄色
     fi
 fi
 
@@ -112,7 +113,6 @@ function get_commit_type_and_message {
       # 清除屏幕
       clear
 
-
       echo "当前正在提交的分支为：" $current_branch
       echo "请选择提交类型（使用回车键选择）:"
 
@@ -130,7 +130,7 @@ function get_commit_type_and_message {
 
       if [ $enter -eq 1 ];then
         # 回车选中变更类型
-        echo "本次变更为: ${highlightRed}${options[$selected]}${normal}"
+        echo "本次变更为: ${highlightOrange}${options[$selected]}${normal}"
         case $selected in
              0)
                prefix="feat"
@@ -159,6 +159,12 @@ function get_commit_type_and_message {
         esac
         echo "请输入$prefix 类型的提交信息:"
         read message
+
+        if [ ${#message} -lt 5 ]; then
+          echo "提交信息字数不能少于5个"
+          break
+        fi
+
         commit_message="$prefix: $message"
         break
       elif [ $upward -eq 1 ] || [ $left -eq 1 ]; then
@@ -186,8 +192,8 @@ if [ -n "$commit_message" ]; then
     if [ $? -eq 0 ]; then
         echo "提交成功！分支名为："$current_branch
     else
-        echo "提交失败，请检查您的Git仓库状态或提交信息是否正确。"
+        echo ${highlightRed}"提交失败，请检查您的Git仓库状态或提交信息是否正确。"${normal}
     fi
 else
-    echo "未获取到有效的提交信息，提交被取消。"
+    echo ${highlightRed}"提交失败，未获取到有效的提交信息，提交被取消。"${normal}
 fi

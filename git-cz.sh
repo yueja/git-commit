@@ -198,10 +198,10 @@ function get_commit_type_and_message {
       if [ $? -eq 0 ]; then
           echo "commit 提交成功！分支名为："$current_branch
       else
-          echo ${highlightRed}"提交失败，请检查您的Git仓库状态或提交信息是否正确。"${normal}
+          echo ${highlightRed}"commit 提交失败，请检查您的Git仓库状态或提交信息是否正确。"${normal}
       fi
   else
-      echo ${highlightRed}"提交失败，未获取到有效的提交信息，提交被取消。"${normal}
+      echo ${highlightRed}"commit 提交失败，未获取到有效的提交信息，提交被取消。"${normal}
   fi
 }
 
@@ -214,7 +214,11 @@ get_commit_type_and_message
 
 if [ ${allStep} -eq 1 ] ; then
   git push
-  echo "push 提交成功！分支名为："$current_branch
+  if [ $? -eq 0 ]; then
+      echo "push 提交成功！分支名为："$current_branch
+    else
+      echo ${highlightRed}"push 提交失败，请检查您的Git仓库状态或提交信息是否正确。"${normal}
+  fi
 fi
 
 

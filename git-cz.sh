@@ -6,69 +6,107 @@ if ! git rev-parse --is-inside-work-tree &>/dev/null; then
     exit 1
 fi
 
-# 定义一个函数来显示提交类型选项并获取用户输入
-function get_commit_type_and_message {
-    echo "请选择提交类型（使用数字选择）:"
-    echo "1. 🎉 feat: 新功能（feature）"
-    echo "2. 🐛 fix: 修补bug"
-    echo "3. 📚 docs: 文档（documentation）"
-    echo "4. 💡 style: 格式（不影响代码运行的变动）"
-    echo "5. 🚀 refactor: 重构（即不是新增功能，也不是修补bug的代码变动）"
-    echo "6. 💖 perf: 性能改进"
-    echo "7. 🚨 test: 增加测试"
-    echo "8. 🚸 chore: 构建过程或辅助工具的变动"
-    echo "请输入你的选择（例如：1）: "
-    read choice
+# 定义选项
+options=(
+"1. 🎉 feat: 新功能（feature）"
+"2. 🐛 fix: 修补bug"
+"3. 📚 docs: 文档（documentation）"
+"4. 💡 style: 格式（不影响代码运行的变动）"
+"5. 🚀 refactor: 重构（即不是新增功能，也不是修补bug的代码变动）"
+"6. 💖 perf: 性能改进"
+"7. 🚨 test: 增加测试"
+"8. 🚸 chore: 构建过程或辅助工具的变动"
+)
 
-    # 验证用户输入
-    if ! [[ $choice =~ ^[1-8]$ ]]; then
-        echo "无效的选择，请重新运行脚本。"
-        exit 1
+# 初始化选中项
+selected=0
+
+# 使用tput设置颜色（如果可用）
+if command -v tput >/dev/null 2>&1; then
+    ncolors=$(tput colors)
+    if [ $ncolors -ge 8 ]; then
+        normal=$(tput sgr0)
+        highlight=$(tput setaf 2) # 亮绿色
     fi
+fi
 
-    # 根据用户的选择，提示输入相应的提交信息
-    case $choice in
-        1)
-            prefix="feat:"
-            ;;
-        2)
-            prefix="fix:"
-            ;;
-        3)
-            prefix="docs:"
-            ;;
-        4)
-            prefix="style:"
-            ;;
-        5)
-            prefix="refactor:"
-            ;;
-        6)
-            prefix="perf:"
-            ;;
-        7)
-            prefix="test:"
-            ;;
-        8)
-            prefix="chore:"
-            ;;
-    esac
+# 如果没有颜色支持，则不设置高亮
+: ${highlight:=$normal}
 
-    echo "请输入$prefix类型的提交信息（以'$prefix'开头）:"
-    read commit_message
 
-    # 验证提交信息是否以正确的前缀开头
-    if [[ ! $commit_message == $prefix* ]]; then
-        echo "错误：提交信息应以'$prefix'开头。"
-        exit 1
-    fi
+#function get_commit_type_and_message {
+  # 主循环
+  while true; do
+      # 清除屏幕
+      clear
 
-    # 返回到脚本的调用者，并传递提交信息
-    echo "$commit_message"
-}
+      echo "请选择提交类型（使用回车键选择）:"
 
-# 调用函数并捕获提交信息
-commit_message=$(get_commit_type_and_message)
+      # 显示选项
+      for (( i=0; i<${#options[@]}; i++ )); do
+          if [ $i -eq $selected ]; then
+              echo -e "${highlight}${options[$i]}${normal}"
+          else
+              echo "${options[$i]}"
+          fi
+      done
+
+      # 读取用户输入
+      read -n 1 key
+      case $key in
+          j)
+              ((selected++))
+              if [ $selected -ge ${#options[@]} ]; then
+                  selected=0
+              fi
+              ;;
+          k)
+              ((selected--))
+              if [ $selected -lt 0 ]; then
+                  selected=$(( ${#options[@]} - 1 ))
+              fi
+              ;;
+           '')
+              echo "选中了: ${options[$selected]}"
+              case $selected in
+                      0)
+                          prefix="feat"
+                          ;;
+                      1)
+                          prefix="fix"
+                          ;;
+                      2)
+                          prefix="docs"
+                          ;;
+                      3)
+                          prefix="style"
+                          ;;
+                      4)
+                          prefix="refactor"
+                          ;;
+                      5)
+                          prefix="perf"
+                          ;;
+                      6)
+                          prefix="test"
+                          ;;
+                      7)
+                          prefix="chore"
+                          ;;
+              esac
+
+              echo "请输入$prefix 类型的提交信息:"
+                read message
+                commit_message="$prefix: $message"
+                echo "信息组装：$commit_message"
+                break
+              ;;
+          *)
+              echo "无效的输入，按 j/k 上下移动，按 q 退出"
+              ;;
+      esac
+  done
+#}
 
 # 执行Git提交
 if [ -n "$commit_message" ]; then

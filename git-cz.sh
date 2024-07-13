@@ -3,11 +3,8 @@
 # 引入readline库
 . /etc/profile.d/readline.sh
 
-# 初始化一个空数组来存储参数
-#params=()
-
 # 全部步骤，包含add 和 push
-allStep =0
+declare -i allStep=0
 
 # 将位置参数添加到数组中
 # 注意：从$1开始，直到最后一个参数
@@ -16,14 +13,6 @@ for arg in "$@"; do
     allStep=1
   fi
 done
-
-echo 6666${allStep}
-
-# 遍历数组并打印每个参数
-#for param in "${params[@]}"; do
-#  if
-#    echo "参数: $param"
-#done
 
 # 检查当前目录是否为Git仓库
 if ! git rev-parse --is-inside-work-tree &>/dev/null; then
@@ -221,7 +210,7 @@ if [[ ${allStep} -eq 1 ]] ; then
 fi
 
 #  调用主函数
-#get_commit_type_and_message
+get_commit_type_and_message
 
 if [ ${allStep} -eq 1 ] ; then
   git push

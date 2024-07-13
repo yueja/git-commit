@@ -218,7 +218,7 @@ get_commit_type_and_message
 
 echo 666666,${paramDict["-a"]}
 
-if [[ -v paramDict["-a"] ]] && [ ${paramDict["-a"]} -eq 1 ] ; then
+if [ ${paramDict["-a"]} -eq 1 ] ; then
   git push
   echo "push 提交成功！分支名为："$current_branch
 fi

@@ -196,7 +196,7 @@ function get_commit_type_and_message {
   if [ -n "$commit_message" ]; then
       git commit -m "$commit_message"
       if [ $? -eq 0 ]; then
-          echo "commit 提交成功！分支名为："$current_branch
+          echo ${highlight}"commit 提交成功！分支名为："$current_branch${normal}
       else
           echo ${highlightRed}"commit 提交失败，请检查您的Git仓库状态或提交信息是否正确。"${normal}
       fi
@@ -205,17 +205,19 @@ function get_commit_type_and_message {
   fi
 }
 
+# git add .
 if [[ ${allStep} -eq 1 ]] ; then
   git add .
 fi
 
-#  调用主函数
+# git commit 调用主函数
 get_commit_type_and_message
 
+# git push
 if [ ${allStep} -eq 1 ] ; then
   git push
   if [ $? -eq 0 ]; then
-      echo "push 提交成功！分支名为："$current_branch
+      echo ${highlight}"push 提交成功！分支名为："$current_branch${normal}
     else
       echo ${highlightRed}"push 提交失败，请检查您的Git仓库状态或提交信息是否正确。"${normal}
   fi

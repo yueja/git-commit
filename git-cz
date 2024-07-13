@@ -37,6 +37,8 @@ fi
 # 如果没有颜色支持，则不设置高亮
 : ${highlight:=$normal}
 
+# 当前分支
+current_branch=$(git branch --show-current)
 
 enter=0
 upward=0
@@ -110,6 +112,8 @@ function get_commit_type_and_message {
       # 清除屏幕
       clear
 
+
+      echo "当前正在提交的分支为：" $current_branch
       echo "请选择提交类型（使用回车键选择）:"
 
       # 显示选项
@@ -180,7 +184,7 @@ get_commit_type_and_message
 if [ -n "$commit_message" ]; then
     git commit -m "$commit_message"
     if [ $? -eq 0 ]; then
-        echo "提交成功！"
+        echo "提交成功！分支名为："$current_branch
     else
         echo "提交失败，请检查您的Git仓库状态或提交信息是否正确。"
     fi

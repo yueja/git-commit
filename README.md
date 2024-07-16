@@ -101,9 +101,9 @@ Closes #245, #992
 git clone git@github.com:yueja/git-commit.git
 
 # 将可执行文件cp到环境变量中，并添加权限
-chmod 755 git-cz.sh
+chmod 755 git-cz
 
-sudo cp git-cz.sh /usr/local/bin/git-cz.sh
+sudo mv git-cz /usr/local/bin/git-cz
 ```
 ### 3.2 使用方法
 #### 1. 在git工程下执行git add .
@@ -129,5 +129,13 @@ sudo cp git-cz.sh /usr/local/bin/git-cz.sh
 git-cz -a
 ```
 执行效果如下：
+![图片 alt](./img/WX20240716-230811@2x.png "图片 title")
 
+## 四、后期扩展（后续更新）
+### 4.1 Go静态代码检查⼯具GolangCI-Lint介绍
+GolangCI-Lint是⼀个lint聚合器，它的速度很快，平均速度是gometalinter的5
+倍。它易于集成和使⽤，具有良好的输出并且具有最⼩数量的误报。⽽且它还⽀持go
+modules
 
+### 4.2 集成GolangCI-Lint
+在代码提交前进行go代码增量扫描实现代码的自动code review功能，实现代码的规范性、可读性。

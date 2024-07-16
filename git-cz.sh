@@ -155,8 +155,8 @@ function get_commit_type_and_message {
       # 清除屏幕
       clear
 
-      echo "当前正在提交的分支为：" $current_branch
-      echo "请选择提交类型（使用回车键选择）:"
+      echo "${highlightOrange}当前正在提交的分支为：" $current_branch${normal}
+      echo "${highlightOrange}请选择提交类型（使用回车键选择）:${normal}"
 
       # 显示选项
       for (( i=0; i<${#options[@]}; i++ )); do
@@ -172,48 +172,6 @@ function get_commit_type_and_message {
 
       if [ $enter -eq 1 ];then
         # 回车选中变更类型
-        echo "本次变更为: ${highlight}${options[$selected]}${normal}"
-        case $selected in
-             0)
-               prefix="🎉 feat"
-               ;;
-             1)
-               prefix="🐛 fix"
-               ;;
-             2)
-               prefix="📚 docs"
-               ;;
-             3)
-               prefix="💡 style"
-               ;;
-             4)
-               prefix="🚀 refactor"
-               ;;
-             5)
-               prefix="💖 perf"
-               ;;
-             6)
-               prefix="🚨 test"
-               ;;
-             7)
-               prefix="🚸 chore"
-               ;;
-        esac
-
-        # scope信息
-        get_commit_scope
-
-        echo "${highlightOrange}请输入$prefix 类型的提交信息:${normal}"
-
-        while true; do
-          read message
-          if [ ${#message} -lt 2 ]; then
-            echo "${highlightRed}提交信息字数不能少于2个${normal}"
-          else break
-          fi
-        done
-
-        commit_message="$prefix($scopeMessage): $message"
         break
       elif [ $upward -eq 1 ] || [ $left -eq 1 ]; then
           ((selected--))
@@ -228,6 +186,54 @@ function get_commit_type_and_message {
       else  echo "无效的输入，按 Ctrl + C 退出"
       fi
   done
+
+  echo "本次变更为: ${highlight}${options[$selected]}${normal}"
+  case $selected in
+     0)
+       prefix="🎉 feat"
+       ;;
+     1)
+       prefix="🐛 fix"
+       ;;
+     2)
+       prefix="📚 docs"
+       ;;
+      3)
+       prefix="💡 style"
+       ;;
+      4)
+       prefix="🚀 refactor"
+       ;;
+      5)
+       prefix="💖 perf"
+       ;;
+      6)
+       prefix="🚨 test"
+       ;;
+      7)
+       prefix="🚸 chore"
+       ;;
+  esac
+
+# scope信息
+  get_commit_scope
+
+  echo "${highlightOrange}请输入$prefix 类型的提交信息:${normal}"
+
+  while true; do
+    read message
+    if [ ${#message} -lt 2 ]; then
+       echo "${highlightRed}提交信息字数不能少于2个${normal}"
+    else break
+    fi
+  done
+
+  echo "${highlightOrange}请输入本次变更详细信息:${normal}"
+  read describe
+
+
+
+  commit_message="$prefix($scopeMessage): $message\n $describe"
 
   # 执行Git提交
   if [ -n "$commit_message" ]; then

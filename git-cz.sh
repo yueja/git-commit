@@ -4,7 +4,7 @@
 
 
 # 引入readline库
-. /etc/profile.d/readline.sh
+#. /etc/profile.d/readline.sh
 
 # 全部步骤，包含add 和 push
 declare -i allStep=0
@@ -60,6 +60,8 @@ upward=0
 down=0
 left=0
 right=0
+
+scopeMessage=""
 
 # 监听用户选择键盘上下输入左右输入和回车换行符
 function listen_in_keyboard {
@@ -120,6 +122,32 @@ function listen_in_keyboard {
   done
 }
 
+function get_commit_scope {
+  echo "${highlightOrange}请输入scope影响范围（1:控制层Controller，2:业务层Biz，3:数据层Dao，4:其他）：${normal}"
+  while true; do
+    read scope
+    if [ $scope -le 0 ] || [ $scope -gt 4 ];then
+      echo "${highlightRed}输入错误，请重新输入${normal}"
+    else
+      case $scope in
+        1)
+          scopeMessage="Controller"
+          ;;
+        2)
+          scopeMessage="Biz"
+          ;;
+        3)
+          scopeMessage="Dao"
+          ;;
+        4)
+          scopeMessage="Other"
+          ;;
+      esac
+      break
+    fi
+  done
+}
+
 
 function get_commit_type_and_message {
 # 主循环
@@ -144,42 +172,49 @@ function get_commit_type_and_message {
 
       if [ $enter -eq 1 ];then
         # 回车选中变更类型
-        echo "本次变更为: ${highlightOrange}${options[$selected]}${normal}"
+        echo "本次变更为: ${highlight}${options[$selected]}${normal}"
         case $selected in
              0)
-               prefix="feat"
+               prefix="🎉 feat"
                ;;
              1)
-               prefix="fix"
+               prefix="🐛 fix"
                ;;
              2)
-               prefix="docs"
+               prefix="📚 docs"
                ;;
              3)
-               prefix="style"
+               prefix="💡 style"
                ;;
              4)
-               prefix="refactor"
+               prefix="🚀 refactor"
                ;;
              5)
-               prefix="perf"
+               prefix="💖 perf"
                ;;
              6)
-               prefix="test"
+               prefix="🚨 test"
                ;;
              7)
-               prefix="chore"
+               prefix="🚸 chore"
                ;;
         esac
-        echo "请输入$prefix 类型的提交信息:"
+
+        # scope信息
+        get_commit_scope
+
+        echo "${highlightOrange}请输入$prefix 类型的提交信息:${normal}"
         read message
 
-        if [ ${#message} -lt 5 ]; then
-          echo "提交信息字数不能少于5个"
-          break
-        fi
+        while true; do
+          if [ ${#message} -lt 2 ]; then
+            echo "${highlightRed}提交信息字数不能少于2个${normal}"
+            break
+          else break
+          fi
+        done
 
-        commit_message="$prefix: $message"
+        commit_message="$prefix($scopeMessage): $message"
         break
       elif [ $upward -eq 1 ] || [ $left -eq 1 ]; then
           ((selected--))
@@ -214,6 +249,7 @@ function get_commit_type_and_message {
 # git add .
 if [[ ${allStep} -eq 1 ]] ; then
   git add .
+  echo "git add ."
 fi
 
 # git commit 调用主函数

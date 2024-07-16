@@ -25,14 +25,17 @@ fi
 
 # 定义选项
 options=(
-"1. 🎉 feat: 新功能（feature）"
+"1. ✨ feat: 新功能（feature）"
 "2. 🐛 fix: 修补bug"
-"3. 📚 docs: 文档（documentation）"
-"4. 💡 style: 格式（不影响代码运行的变动）"
-"5. 🚀 refactor: 重构（即不是新增功能，也不是修补bug的代码变动）"
-"6. 💖 perf: 性能改进"
-"7. 🚨 test: 增加测试"
+"3. 📝 docs: 文档（documentation）"
+"4. 💄 style: 格式（不影响代码运行的变动）"
+"5. ♻️ refactor: 重构（即不是新增功能，也不是修补bug的代码变动）"
+"6. ⚡️ perf: 性能改进"
+"7. ✅ test: 增加测试"
 "8. 🚸 chore: 构建过程或辅助工具的变动"
+"9. ⏪️ revert：回滚到上一个版本"
+"10. 🔀 merge：回滚到上一个版本"
+"11. 👷 sync：回滚到上一个版本"
 )
 
 # 初始化选中项
@@ -190,28 +193,37 @@ function get_commit_type_and_message {
   echo "本次变更为: ${highlight}${options[$selected]}${normal}"
   case $selected in
      0)
-       prefix="🎉 feat"
+       prefix="✨ feat"
        ;;
      1)
        prefix="🐛 fix"
        ;;
      2)
-       prefix="📚 docs"
+       prefix="📝 docs"
        ;;
       3)
-       prefix="💡 style"
+       prefix="💄 style"
        ;;
       4)
-       prefix="🚀 refactor"
+       prefix="♻️ refactor"
        ;;
       5)
-       prefix="💖 perf"
+       prefix="⚡️ perf"
        ;;
       6)
-       prefix="🚨 test"
+       prefix="✅ test"
        ;;
       7)
        prefix="🚸 chore"
+       ;;
+      8)
+       prefix="⏪️ chore"
+       ;;
+      9)
+       prefix="🔀 chore"
+       ;;
+      10)
+       prefix="👷 chore"
        ;;
   esac
 

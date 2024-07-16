@@ -124,7 +124,7 @@ sudo cp git-cz.sh /usr/local/bin/git-cz.sh
 #### 4. 最后git push
 
 ### 3.3 简单使用
-将add，commit，push集成到一个命令，add 默认为当前目录，使用命令
+将add，commit，push集成到一个命令，add 默认为当前目录，简化提交命令，使用命令
 ```shell
 git-cz -a
 ```

@@ -233,6 +233,7 @@ function get_commit_type_and_message {
 
   echo -e "$prefix($scopeMessage): $message\n$describe" > commit_msg.txt
   git commit --file=commit_msg.txt
+  rm -f commit_msg
   # 执行Git提交
 #  git commit -m "$commit_message"
    if [ $? -eq 0 ]; then

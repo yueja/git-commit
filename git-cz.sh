@@ -234,7 +234,7 @@ function get_commit_type_and_message {
 
 
   commit_message="$prefix($scopeMessage): $message\n $describe"
-  echo $commit_message
+  echo 1111,$commit_message
 
   # 执行Git提交
   if [ -n "$commit_message" ]; then

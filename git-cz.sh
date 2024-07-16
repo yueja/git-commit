@@ -123,7 +123,7 @@ function listen_in_keyboard {
 }
 
 function get_commit_scope {
-  echo "${highlightOrange}请输入scope影响范围（1:控制层Controller，2:业务层Biz，3:数据层Dao，4:其他）：${normal}"
+  echo "${highlightOrange}请输入影响范围（1:控制层Controller，2:业务层Biz，3:数据层Dao，4:其他）：${normal}"
   while true; do
     read scope
     if [ $scope -le 0 ] || [ $scope -gt 4 ];then
@@ -204,12 +204,11 @@ function get_commit_type_and_message {
         get_commit_scope
 
         echo "${highlightOrange}请输入$prefix 类型的提交信息:${normal}"
-        read message
 
         while true; do
+          read message
           if [ ${#message} -lt 2 ]; then
             echo "${highlightRed}提交信息字数不能少于2个${normal}"
-            break
           else break
           fi
         done

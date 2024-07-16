@@ -123,10 +123,10 @@ function listen_in_keyboard {
 }
 
 function get_commit_scope {
-  echo "${highlightOrange}请输入影响范围（1:控制层Controller，2:业务层Biz，3:数据层Dao，4:其他）：${normal}"
   while true; do
+    echo -n "${highlightOrange}请输入影响范围（1:控制层Controller，2:业务层Biz，3:数据层Dao，4:其他）：${normal}"
     read scope
-    if [ $scope -le 0 ] || [ $scope -gt 4 ];then
+    if [ -z "$scope" ] || [ $scope -le 0 ] || [ $scope -gt 4 ];then
       echo "${highlightRed}输入错误，请重新输入${normal}"
     else
       case $scope in
@@ -218,7 +218,7 @@ function get_commit_type_and_message {
 # scope信息
   get_commit_scope
 
-  echo "${highlightOrange}请输入$prefix 类型的提交信息:${normal}"
+  echo -n "${highlightOrange}请输入$prefix 类型的提交信息:${normal}"
 
   while true; do
     read message
@@ -228,17 +228,16 @@ function get_commit_type_and_message {
     fi
   done
 
-  echo "${highlightOrange}请输入本次变更详细信息:${normal}"
+  echo -n "${highlightOrange}请输入本次变更详细信息:${normal}"
   read describe
 
-
-
-  commit_message="$prefix($scopeMessage): $message\n $describe"
-  echo 1111,$commit_message
+  commit_message="$prefix($scopeMessage)：$message"
 
   # 执行Git提交
   if [ -n "$commit_message" ]; then
       git commit -m "$commit_message"
+      echo -e "$commit_message\n$describe" | git commit -F -
+
       if [ $? -eq 0 ]; then
           echo ${highlight}"commit 提交成功！分支名为："$current_branch${normal}
           return

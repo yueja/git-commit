@@ -231,24 +231,17 @@ function get_commit_type_and_message {
   echo -n "${highlightOrange}请输入本次变更详细信息:${normal}"
   read describe
 
-  commit_message="$prefix($scopeMessage)：$message"
-
+  echo -e "$prefix($scopeMessage): $message\n$describe" > commit_msg.txt
+  git commit --file=commit_msg.txt
   # 执行Git提交
-  if [ -n "$commit_message" ]; then
-      git commit -m "$commit_message"
-      echo -e "$commit_message\n$describe" | git commit -F -
-
-      if [ $? -eq 0 ]; then
-          echo ${highlight}"commit 提交成功！分支名为："$current_branch${normal}
-          return
-      else
-          echo ${highlightRed}"commit 提交失败，请检查您的Git仓库状态或提交信息是否正确。"${normal}
-          return 1
-      fi
-  else
-      echo ${highlightRed}"commit 提交失败，未获取到有效的提交信息，提交被取消。"${normal}
-      return 1
-  fi
+#  git commit -m "$commit_message"
+   if [ $? -eq 0 ]; then
+     echo ${highlight}"commit 提交成功！分支名为："$current_branch${normal}
+     return
+   else
+     echo ${highlightRed}"commit 提交失败，请检查您的Git仓库状态或提交信息是否正确。"${normal}
+     return 1
+   fi
 }
 
 # git add .

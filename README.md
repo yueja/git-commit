@@ -101,9 +101,9 @@ Closes #245, #992
 git clone git@github.com:yueja/git-commit.git
 
 # 将可执行文件cp到环境变量中，并添加权限
-chmod 755 git-cz.sh
+chmod 755 git-cz
 
-sudo mv git-cz.sh /usr/local/bin/git-cz.sh
+sudo mv git-cz /usr/local/bin/git-cz
 ```
 ### 3.2 使用方法
 #### 1. 在git工程下执行git add .
@@ -129,7 +129,7 @@ sudo mv git-cz.sh /usr/local/bin/git-cz.sh
 ### 3.3 简单使用
 将add，commit，push集成到一个命令，add 默认为当前目录，简化提交命令，使用命令
 ```shell
-git-cz.sh -a
+git-cz -a
 ```
 执行效果如下：
 ![图片 alt](./img/WX20240716-230811@2x.png "图片 title")

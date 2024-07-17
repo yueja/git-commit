@@ -25,13 +25,13 @@ fi
 
 # 定义选项
 options=(
-"1. ✨ feat: 新功能（feature）"
+"1. ✨  feat: 新功能（feature）"
 "2. 🐛 fix: 修补bug"
 "3. 📝 docs: 文档（documentation）"
 "4. 💄 style: 格式（不影响代码运行的变动）"
 "5. ♻️ refactor: 重构（即不是新增功能，也不是修补bug的代码变动）"
 "6. ⚡️ perf: 性能改进"
-"7. ✅ test: 增加测试"
+"7. ✅  test: 增加测试"
 "8. 🚸 chore: 构建过程或辅助工具的变动"
 "9. ⏪️ revert：回滚到上一个版本"
 "10. 🔀 merge：代码合并"
@@ -129,9 +129,14 @@ function get_commit_scope {
   while true; do
     echo -n "${highlightOrange}请输入影响范围（1:控制层Controller，2:业务层Biz，3:数据层Dao，4:其他）：${normal}"
     read scope
-    if [ -z "$scope" ] || [ $scope -le 0 ] || [ $scope -gt 4 ];then
-      echo "${highlightRed}输入错误，请重新输入${normal}"
-    else
+    case $scope in
+         *[!1-4]*)
+           echo "${highlightRed}输入错误，请重新输入${normal}"
+           continue
+         ;;
+    esac
+
+    if [ $scope -gt 1 ] || [ $scope -lt 4 ];then
       case $scope in
         1)
           scopeMessage="Controller"
@@ -148,6 +153,7 @@ function get_commit_scope {
       esac
       break
     fi
+
   done
 }
 

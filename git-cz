@@ -129,6 +129,12 @@ function get_commit_scope {
   while true; do
     echo -n "${highlightOrange}请输入影响范围（1:控制层Controller，2:业务层Biz，3:数据层Dao，4:其他）：${normal}"
     read scope
+
+    if [ -z "$scope" ]; then
+        echo "${highlightRed}输入错误，请重新输入${normal}"
+        continue
+    fi
+
     case $scope in
          *[!1-4]*)
            echo "${highlightRed}输入错误，请重新输入${normal}"
